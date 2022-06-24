@@ -25,8 +25,8 @@ const InfoUser = sequelize.define('infoUser', {
 
 const Post = sequelize.define('post', {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    title: { type: DataTypes.STRING, unique: true },
-    content: { type: DataTypes.STRING },
+    title: { type: DataTypes.STRING, },
+    content: { type: DataTypes.STRING, unique: true },
     image: { type: DataTypes.STRING },
     like: { type: DataTypes.STRING, defaultValue: 0 },
     dislike: { type: DataTypes.STRING, defaultValue: 0 }

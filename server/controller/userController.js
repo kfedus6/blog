@@ -8,11 +8,14 @@ const uuid = require('uuid');
 class UserController {
     async registration(req, res, next) {
         const { username, email, password, admin } = req.body
-        /* 
-                const { img } = req.files
-                const fileName = uuid.v4() + '.jpg'
-                img.mv(path.resolve(__dirname, '..', 'static', fileName)) 
-        */
+        const img = req.files
+
+        let fileName
+
+        if (img !== undefined && img !== null) {
+            fileName = uuid.v4() + '.jpg'
+            img.mv(path.resolve(__dirname, '..', 'static', fileName))
+        }
 
         if (username === undefined) {
             return next(ApiError.badRequest('incorrect username'))
@@ -32,7 +35,7 @@ class UserController {
         }
 
         const bcryptPassword = await bcrypt.hash(password, 5)
-        const user = await User.create({ username: username, email: email, password: bcryptPassword, admin: admin })
+        const user = await User.create({ username: username, email: email, password: bcryptPassword, admin: admin, iamge: fileName })
 
         const token = jwt.sign({ userId: user.id, username: user.username, email: user.email, admin: user, admin },
             process.env.codeSecret,
