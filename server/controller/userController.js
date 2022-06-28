@@ -41,7 +41,7 @@ class UserController {
             process.env.codeSecret,
             { expiresIn: '1h' })
 
-        res.json({ token })
+        return res.json({ token })
     }
 
     async login(req, res, next) {
@@ -62,12 +62,12 @@ class UserController {
             process.env.codeSecret,
             { expiresIn: '1h' })
 
-        res.json({ token })
+        return res.json({ token })
     }
 
     async auhtorization(req, res) {
         const token = jwt.sign({ userId: req.user.id, username: req.user.username, email: req.user.email, admin: req.user.admin }, process.env.codeSecret, { expiresIn: '1h' })
-        res.json({ token })
+        return res.json({ token })
     }
 };
 

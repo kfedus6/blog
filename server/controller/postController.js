@@ -1,22 +1,16 @@
-const { Post } = require('../models/models');
+const { Post, TypePost } = require('../models/models');
 const ApiError = require('../error/apiError');
 const uuid = require('uuid');
 const path = require('path');
 
 class PostController {
     async createPost(req, res, next) {
-        const { title, content, userId } = req.body
+        const { title, content, userId, typePostId } = req.body
 
-        const img = req.files
+        const { img } = req.files
 
-        let fileName
-
-        if (img !== null && img !== undefined) {
-            fileName = uuid.v4() + 'jpg'
-            img.mv(path.resolve(__dirname, '..', 'static', fileName))
-        }
-
-        let post
+        let fileName = uuid.v4() + 'jpg'
+        img.mv(path.resolve(__dirname, '..', 'static', fileName))
 
         if (title === undefined) {
             return next(ApiError.badRequest('incorrect title'))
@@ -24,13 +18,13 @@ class PostController {
             return next(ApiError.badRequest('incorrect content'))
         }
 
-        post = await Post.create({ title: title, content: content, userId: userId, image: fileName })
+        const post = await Post.create({ title: title, content: content, userId: userId, typePostId: typePostId, image: fileName })
 
         return res.json(post)
     }
 
     async getPosts(req, res) {
-        let { typeId, limit, page } = req.body
+        let { typePostId, limit, page } = req.body
 
         if (limit === undefined) {
             limit = 10
@@ -42,10 +36,11 @@ class PostController {
 
         let offset = page * limit - limit
         let posts
-        if (typeId === undefined) {
+
+        if (typePostId === undefined) {
             posts = await Post.findAndCountAll({ limit: Number(limit), offset: Number(offset) })
-        } else if (typeId !== undefined) {
-            posts = await Post.findAndCountAll({ where: { typeId } }, { limit: Number(limit), offset: Number(offset) })
+        } else {
+            posts = await Post.findAndCountAll({ where: { typePostId: typePostId } }, { limit: Number(limit), offset: Number(offset) })
         }
 
         return res.json(posts)
